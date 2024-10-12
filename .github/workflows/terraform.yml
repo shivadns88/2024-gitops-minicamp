@@ -1,9 +1,4 @@
 name: 'Terraform'
-
-#we may want to not let this run with push and run only with pull request
-#we also don't want other developers to screw up main
-# In below, under pull_request, nothing is added
-
 on:
   push:
     branches: [ $default-branch ]
@@ -12,7 +7,7 @@ on:
 permissions:
   contents: read
 
-  # environment has to be necessarily defined
+# environment has to be necessarily defined
 jobs:
   terraform:
     name: 'Terraform'
@@ -34,8 +29,7 @@ jobs:
     # Default below is v1 and we are using v3
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
-#      with:
-#        cli_config_credentials_token: #${{# secrets#.TF_API_TOKEN##}}#
+
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     # If the directory in which terraform needs to be init is different, use terraform -chdir="./terraform" init
