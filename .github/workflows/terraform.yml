@@ -1,0 +1,63 @@
+name: 'Terraform'
+
+#we may want to not let this run with push and run only with pull request
+#we also don't want other developers to screw up main
+# In below, under pull_request, nothing is added
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+
+permissions:
+  contents: read
+
+  # environment has to be necessarily defined
+jobs:
+  terraform:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    environment: production
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    # We comment out with: below as that is required only for terraform cloud
+    # Default below is v1 and we are using v3
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+#      with:
+#        cli_config_credentials_token: #${{# secrets#.TF_API_TOKEN##}}#
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    # If the directory in which terraform needs to be init is different, use terraform -chdir="./terraform" init
+    # -chdir=DIR is a global option to run the command in the correct directory
+    - name: Terraform Init
+      run: terraform -chdir="./terraform" init
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    #While debugging and testing things, it is good to comment out terraform fmt to reduce amount of time spent on debugging
+    - name: Terraform Format
+      run: terraform -chdir="./terraform" fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform -chdir="./terraform" plan -input=false
+
+      # On push to $default-branch, build or change infrastructure according to Terraform configuration files
+      # read about apply on merge vs apply before merge: https://medium.com/@DiggerHQ/the-case-for-apply-before-merge-bc08a7a9bfea
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+      # below script applies after merged to main by default
+      # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#workflow_dispatch
+
+#   - name: Terraform Apply
+#     if: github.ref == 'refs/heads/$default-branch' && github.event_name == 'push'
+#     run: terraform apply -auto-approve -input=false
