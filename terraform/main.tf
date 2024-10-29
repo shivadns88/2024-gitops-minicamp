@@ -105,7 +105,7 @@ check "grafana_health_check" {
   }
 
   assert {
-    condition = data.http.health_check.status_code == 200
+    condition     = data.http.health_check.status_code == 200
     error_message = "Grafana is not accessible on port 3000"
   }
 }
