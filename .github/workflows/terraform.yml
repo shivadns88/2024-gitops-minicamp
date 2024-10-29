@@ -6,7 +6,8 @@ on:
 
 permissions:
   contents: read
-
+  id-token: write
+  
 # environment has to be necessarily defined
 jobs:
   terraform:
@@ -19,6 +20,12 @@ jobs:
         working-directory: ./terraform
 
     steps:
+
+    - name: Configure AWS Credentials for China region audience
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-east-1
+        role-to-assume: ${{ secrets.ASSUMED_ROLE }}    
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v4
