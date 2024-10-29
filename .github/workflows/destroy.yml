@@ -1,8 +1,5 @@
-name: 'Terraform'
-on:
-  push:
-    branches: [ 'main' ]
-  pull_request:
+name: 'Destroy'
+on: workflow_dispatch
 
 permissions:
   contents: read
@@ -52,8 +49,6 @@ jobs:
     - name: Terraform Plan
       run: terraform plan -input=false
 
-      # On push to $default-branch, build or change infrastructure according to Terraform configuration files
-      # read about apply on merge vs apply before merge: https://medium.com/@DiggerHQ/the-case-for-apply-before-merge-bc08a7a9bfea
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-      # below script applies after merged to main by default
-      # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#workflow_dispatch
+    # Apply the configuration
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve -input=false
