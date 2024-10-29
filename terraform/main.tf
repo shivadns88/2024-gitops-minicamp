@@ -95,3 +95,17 @@ resource "aws_instance" "grafana_server" {
     Name = "grafana-server"
   }
 }
+
+check "grafana_health_check" {
+  data "http" "health_check" {
+    url = "https://${aws_instance.grafana_server.public_ip}:3000"
+    retry {
+      attempts = 5
+    }
+  }
+
+  assert {
+    condition = data.http.health_check.status_code == 200
+    error_message = "Grafana is not accessible on port 3000"
+  }
+}
