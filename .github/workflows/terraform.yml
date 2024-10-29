@@ -52,6 +52,10 @@ jobs:
     - name: Terraform Plan
       run: terraform plan -input=false
 
+    # Generates an execution plan for Terraform
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false}
+
       # On push to $default-branch, build or change infrastructure according to Terraform configuration files
       # read about apply on merge vs apply before merge: https://medium.com/@DiggerHQ/the-case-for-apply-before-merge-bc08a7a9bfea
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
